@@ -1,10 +1,9 @@
 package com.globant.counter.android.mvp.presenter;
 
-import static com.globant.counter.android.mvp.view.CalculatorView.OnButtonClickedEvent;
 import static com.globant.counter.android.mvp.view.CalculatorView.OnClearLastSymbolEvent;
-import com.globant.counter.android.mvp.model.IModel;
+
+import com.globant.counter.android.mvp.model.CalculatorModel;
 import com.globant.counter.android.mvp.view.CalculatorView;
-import com.globant.counter.android.mvp.view.IView;
 import com.squareup.otto.Subscribe;
 
 /**
@@ -12,52 +11,43 @@ import com.squareup.otto.Subscribe;
  */
 
 
-public class CalculatorPresenter implements IPresenter{
-    private IModel mModel;
-    private IView mView;
+public class CalculatorPresenter {
+    private CalculatorModel mModel;
+    private CalculatorView mView;
 
-    public CalculatorPresenter(IModel model, IView view){
+    public CalculatorPresenter(CalculatorModel model, CalculatorView view) {
         mModel = model;
         mView = view;
-    }
-
-    @Subscribe
-    public void validateExpresion(OnButtonClickedEvent event){
-
-        if (mModel.isExpresionValid(event.expresion)){
-            mView.updateUI(event.expresion);
-        }
     }
 
     /**
      * Estos dos(clearLastSymbol y clearAll) podrían simplemente llamar al método del model y que el model haga los checks
      */
     @Subscribe
-    public void clearLastSymbol(OnClearLastSymbolEvent event){
+    public void clearLastSymbol(OnClearLastSymbolEvent event) {
 
-        if (!mModel.isExpresionNull()){
-
-            mView.updateUI(mModel.clearLast());
-        }
+        /**if (!mModel.isExpresionNull()){
+         mView.updateUI(mModel.getExpresion());
+         }*/
     }
 
     @Subscribe
-    public void clearAll(CalculatorView.OnClearAllEvent event){
-
-        if(!mModel.isExpresionNull()){
-            mModel.clearAll();
-            mView.clearAll();
-        }
+    public void clearAll(CalculatorView.OnClearAllEvent event) {
+        mModel.reset();
+        mView.clearAll();
     }
 
     @Subscribe
-    public void resolve(CalculatorView.OnREsolveEvent event){
-
-        if(mModel.isExpresionValid(event.expresion)){
-            mView.updateUI(mModel.getResult());
-        } else{
-            mView.showExpresionError();
-        }
+    public void resolve(CalculatorView.OnButtonCalculateEvent event) {
+        mView.updateUIResult(mModel.resolveExpresion(event.expresion));
+        mView.clearAll();
     }
 
+    @Subscribe
+    public void onValidateExpresionEvent(CalculatorView.validateExpresionEvent event) {
+        if (mModel.isExpresionValid(event.expresion)) {
+        } else {
+            mView.clearLast();
+        }
+    }
 }

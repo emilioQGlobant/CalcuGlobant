@@ -1,14 +1,14 @@
 package com.globant.counter.android.mvp.presenter;
 
-import com.globant.counter.android.mvp.model.CountModel;
-import com.globant.counter.android.mvp.view.CountView;
+import com.globant.counter.android.mvp.model.CalculatorModel;
+import com.globant.counter.android.mvp.view.CalculatorView;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -20,15 +20,15 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  */
 public class PresenterTest {
 
-    private CountPresenter presenter;
-    private CountModel model;
-    private CountView view;
+    private CalculatorPresenter presenter;
+    private CalculatorModel model;
+    private CalculatorView view;
 
     @Before
     public void setup() {
-        model = new CountModel();
-        view = mock(CountView.class);
-        presenter = new CountPresenter(model, view);
+        model = new CalculatorModel();
+        view = mock(CalculatorView.class);
+        presenter = new CalculatorPresenter(model, view);
     }
 
     @Test
@@ -36,24 +36,59 @@ public class PresenterTest {
         assertEquals(4, 2 + 2);
     }
 
+    /**
+     * this should test 11+7 and the result spected is 18
+     */
     @Test
-    public void isShouldIncCountByOne() {
+    public void addition_works() {
         model.reset();
-        presenter.onCountButtonPressed(new CountView.CountButtonPressedEvent());
-        assertEquals(model.getCount(), 1);
-        verify(view).setCount("1");
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("1"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("1"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("+"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("7"));
+
+        assertEquals(model.resolveExpresion("11+7"), "18");
+
         verifyNoMoreInteractions(view);
     }
 
+    /**
+     * This test should test if invalid inputs aren't allowed
+     */
     @Test
-    public void isShouldResetCount() {
-        presenter.onCountButtonPressed(new CountView.CountButtonPressedEvent());
-        presenter.onCountButtonPressed(new CountView.CountButtonPressedEvent());
-        presenter.onCountButtonPressed(new CountView.CountButtonPressedEvent());
-        assertEquals(model.getCount(), 3);
-        presenter.onResetButtonPressed(new CountView.ResetButtonPressedEvent());
-        assertEquals(model.getCount(), 0);
-        verify(view, times(4)).setCount(anyString());
+    public void invalid_input_deleted() {
+        model.reset();
+
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("a"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("%"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("z"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("?"));
+
+        verify(view,times(4)).clearLast();
+        verifyNoMoreInteractions(view);
+    }
+
+    /**
+     * This test should pass if the result of the operation 11+7/18x2 is equals to 2
+     */
+    @Test
+    public void complex_operation(){
+        String expresion ="11+7/18x2";
+        model.reset();
+
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("1"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("1"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("+"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("7"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("/"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("1"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("8"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("x"));
+        presenter.onValidateExpresionEvent(new CalculatorView.validateExpresionEvent("2"));
+        presenter.resolve(new CalculatorView.OnButtonCalculateEvent(expresion));
+
+        verify(view).clearAll();
+        verify(view).updateUIResult("2");
         verifyNoMoreInteractions(view);
     }
 }

@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Android</string>
+    <string name="app_name">Calculadora</string>
+    <string name="tv_insert_expresion">Instert Expresion</string>
+    <string name="btn_calcular">CALCULATE</string>
+    <string name="et_input">EXPRESION</string>
+    <string name="tv_result">RESULT</string>
 </resources>

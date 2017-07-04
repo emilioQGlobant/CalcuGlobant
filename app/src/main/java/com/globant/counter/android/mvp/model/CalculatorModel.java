@@ -9,11 +9,13 @@ import java.util.List;
 
 public class CalculatorModel {
 
+    private static final String WRONG_EXPRESION = "WRONG EXPRESION";
+    private static final String NOT_OPERATION = "Not Operation";
     private List<String> expresionList;
 
     private boolean lastWasOperator;
     /**
-     * @auxOperand concatena los números hasta que venga un operador(+,-,*,/,=)
+     * @auxOperand appends the numbers that arrive until an operator appears(+,-,*,/,=)
      */
     private String auxOperand;
 
@@ -82,13 +84,13 @@ public class CalculatorModel {
 
     public String resolveExpresion(String expresion) {//TODO: resolver expresion
         if (expresion.isEmpty()) {
-            return "Not Operation";
+            return NOT_OPERATION;
         }
 
         addLastNumber(expresion);
 
         if (!isExpresionValid(expresion)) {
-            return "WRONG EXPRESION";
+            return WRONG_EXPRESION;
         } else {
             return calculate(expresion);
         }
@@ -116,7 +118,6 @@ public class CalculatorModel {
             return "Not Operation";
         }
 
-        String result = "";
         String op1 = expresionList.get(0);
         String operand = expresionList.get(1);
         String op2 = expresionList.get(2);
@@ -135,13 +136,13 @@ public class CalculatorModel {
 
         switch (operand) {
             case "+":
-                return (Integer.parseInt(op1) + Integer.parseInt(op2)) + "";
+                return new Integer(Integer.parseInt(op1) + Integer.parseInt(op2)).toString();
             case "-":
-                return (Integer.parseInt(op1) - Integer.parseInt(op2)) + "";
+                return new Integer(Integer.parseInt(op1) - Integer.parseInt(op2)).toString();
             case "x":
-                return (Integer.parseInt(op1) * Integer.parseInt(op2)) + "";
+                return new Integer(Integer.parseInt(op1) * Integer.parseInt(op2)).toString();
             case "/":
-                return (Integer.parseInt(op1) / Integer.parseInt(op2)) + "";
+                return new Integer(Integer.parseInt(op1) / Integer.parseInt(op2)).toString();
             default:
                 return "";
         }

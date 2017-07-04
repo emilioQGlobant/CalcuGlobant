@@ -6,6 +6,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.globant.counter.android.R;
+import com.globant.counter.android.mvp.view.events.OnButtonCalculateEvent;
+import com.globant.counter.android.mvp.view.events.validateExpresionEvent;
 import com.squareup.otto.Bus;
 
 import butterknife.BindView;
@@ -60,32 +62,6 @@ public class CalculatorView extends ActivityView {
 
     public void updateUIResult(String expresion) {
         tvResult.setText(expresion);
-    }
-
-    /**
-     * Clases to be sent when events occur
-     */
-
-    public static class validateExpresionEvent {
-        public String expresion;
-
-        public validateExpresionEvent(String expresion) {
-            this.expresion = expresion;
-        }
-    }
-
-    public static class OnButtonCalculateEvent {
-        public String expresion;
-
-        public OnButtonCalculateEvent(String expresion) {
-            this.expresion = expresion;
-        }
-    }
-
-    public static class OnClearLastSymbolEvent {
-    }
-
-    public static class OnClearAllEvent {
     }
 
 }
